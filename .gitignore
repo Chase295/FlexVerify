@@ -5,7 +5,7 @@
 # ===========================================
 # Environment & Secrets
 # ===========================================
-.env
+# .env is tracked for Portainer deployment
 .env.local
 .env.*.local
 *.pem
