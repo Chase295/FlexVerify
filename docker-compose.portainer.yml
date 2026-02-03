@@ -1,0 +1,85 @@
+# =============================================
+# FlexVerify - Portainer Stack Configuration
+# =============================================
+# Use this file for Portainer deployment with pre-built images
+# Images are automatically built via GitHub Actions
+#
+# In Portainer:
+# 1. Create new Stack
+# 2. Select "Repository" and enter: https://github.com/Chase295/FlexVerify
+# 3. Set Compose path to: docker-compose.portainer.yml
+# 4. Add environment variables as needed
+# =============================================
+
+services:
+  # PostgreSQL with pgvector
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: flexverify-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-flexverify}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flexverify123}
+      POSTGRES_DB: ${POSTGRES_DB:-flexverify}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flexverify"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flexverify-net
+    restart: unless-stopped
+
+  # Backend API (pre-built image from GitHub Container Registry)
+  backend:
+    image: ghcr.io/chase295/flexverify-backend:latest
+    container_name: flexverify-backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://flexverify:flexverify123@db:5432/flexverify}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-flexverify-secret-key-change-in-production-2024}
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      JWT_REFRESH_TOKEN_EXPIRE_DAYS: ${JWT_REFRESH_TOKEN_EXPIRE_DAYS:-7}
+      DEBUG: ${DEBUG:-false}
+      TIMEZONE: ${TIMEZONE:-Europe/Berlin}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost}
+      FACE_RECOGNITION_THRESHOLD: ${FACE_RECOGNITION_THRESHOLD:-0.6}
+      FACE_RECOGNITION_MODEL: ${FACE_RECOGNITION_MODEL:-hog}
+      SUPERADMIN_EMAIL: ${SUPERADMIN_EMAIL:-admin@flexverify.dev}
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:-admin123}
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    networks:
+      - flexverify-net
+    restart: unless-stopped
+
+  # Frontend (pre-built image with nginx)
+  frontend:
+    image: ghcr.io/chase295/flexverify-frontend:latest
+    container_name: flexverify-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - flexverify-net
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  uploads:
+
+networks:
+  flexverify-net:
+    driver: bridge
