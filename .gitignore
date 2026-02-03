@@ -1,0 +1,127 @@
+# ===========================================
+# FlexVerify - Git Ignore
+# ===========================================
+
+# ===========================================
+# Environment & Secrets
+# ===========================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ===========================================
+# Python / Backend
+# ===========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+.venv/
+ENV/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ===========================================
+# Node.js / Frontend
+# ===========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+frontend/dist/
+frontend/build/
+.cache/
+*.tsbuildinfo
+
+# ===========================================
+# IDE & Editors
+# ===========================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.cursor/
+*.sublime-project
+*.sublime-workspace
+
+# ===========================================
+# OS Files
+# ===========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===========================================
+# Docker
+# ===========================================
+# Don't ignore docker-compose.yml - it's needed!
+
+# ===========================================
+# Uploads & Generated Files
+# ===========================================
+uploads/
+*.log
+logs/
+tmp/
+temp/
+
+# ===========================================
+# Testing & Coverage
+# ===========================================
+coverage/
+*.lcov
+.nyc_output/
+
+# ===========================================
+# Build Artifacts
+# ===========================================
+*.o
+*.obj
+*.exe
+*.dll
+*.dylib
+
+# ===========================================
+# Temporary Files
+# ===========================================
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# ===========================================
+# Project Specific
+# ===========================================
+# Icon generation scripts (keep the generated icons)
+frontend/scripts/generate-icons.mjs
+frontend/scripts/generate-favicon.mjs
